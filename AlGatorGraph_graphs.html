@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGator Graph Generator Library</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 2.8em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .category-section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .category-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px 30px;
+            margin-bottom: 0;
+        }
+        .category-header h2 {
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-count {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+        .graph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .graph-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .graph-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .graph-image-container {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 10px;
+        }
+        .graph-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        .graph-content {
+            padding: 15px;
+        }
+        .graph-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .graph-description {
+            font-size: 0.95em;
+            line-height: 1.4;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .parameter-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .no-param-badge {
+            background: #2ecc71;
+        }
+        .parameters {
+            background: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85em;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        .docs-section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .docs-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px 30px;
+        }
+        .docs-header h2 {
+            font-size: 1.8em;
+        }
+        .docs-content {
+            padding: 30px;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .example-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        .note {
+            background: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 768px) {
+            .graph-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ALGator Graph Generator Library</h1>
+            <p class="subtitle">Complete documentation and gallery of graph generation capabilities</p>
+        </header>
+        <div class="category-section" id="no-params">
+            <div class="category-header">
+                <h2> Graphs Without Parameters <span class="category-count">46 graphs</span></h2>
+            </div>
+            <div class="graph-grid">
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/bidiakis_cube.png" alt="BIDIAKIS_CUBE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BIDIAKIS CUBE</div>
+                <div class="graph-description">Bidiakis cube graph - a 3-regular graph with 12 vertices and 18 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/blanusa_first_snark.png" alt="BLANUSA_FIRST_SNARK" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BLANUSA FIRST SNARK</div>
+                <div class="graph-description">Blanusa's first snark graph - a snark with 18 vertices and 27 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/blanusa_second_snark.png" alt="BLANUSA_SECOND_SNARK" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BLANUSA SECOND SNARK</div>
+                <div class="graph-description">Blanusa's second snark graph - a snark with 18 vertices and 27 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/brinkmann.png" alt="BRINKMANN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BRINKMANN</div>
+                <div class="graph-description">Brinkmann graph - a symmetric cubic graph with 21 vertices and 31 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/bucky_ball.png" alt="BUCKY_BALL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BUCKY BALL</div>
+                <div class="graph-description">Bucky ball graph - the graph of a truncated icosahedron (C60 fullerene) with 60 vertices and 90 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/bull.png" alt="BULL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BULL</div>
+                <div class="graph-description">Bull graph - a triangle with two pendant vertices (5 vertices, 5 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/butterfly.png" alt="BUTTERFLY" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BUTTERFLY</div>
+                <div class="graph-description">Butterfly graph - also known as the bowtie graph (5 vertices, 6 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/chvatal.png" alt="CHVATAL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">CHVATAL</div>
+                <div class="graph-description">Chvatal graph - a triangle-free 4-regular graph with 12 vertices and 24 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/claw.png" alt="CLAW" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">CLAW</div>
+                <div class="graph-description">Claw graph (K1,3) - a star graph with one central vertex and three leaves (4 vertices, 3 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/clebsch.png" alt="CLEBSCH" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">CLEBSCH</div>
+                <div class="graph-description">Clebsch graph - a strongly regular graph with 16 vertices and 40 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/coxeter.png" alt="COXETER" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">COXETER</div>
+                <div class="graph-description">Coxeter graph - a non-Hamiltonian 3-regular graph with 28 vertices and 42 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/desargues.png" alt="DESARGUES" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">DESARGUES</div>
+                <div class="graph-description">Desargues graph - a distance-transitive cubic graph with 20 vertices and 30 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/diamond.png" alt="DIAMOND" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">DIAMOND</div>
+                <div class="graph-description">Diamond graph - a complete graph K4 with one edge removed (4 vertices, 5 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/dodecahedron.png" alt="DODECAHEDRON" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">DODECAHEDRON</div>
+                <div class="graph-description">Dodecahedron graph - the graph of a regular dodecahedron (20 vertices, 30 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/double_star_snark.png" alt="DOUBLE_STAR_SNARK" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">DOUBLE STAR SNARK</div>
+                <div class="graph-description">Double star snark graph - a snark with 30 vertices and 45 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/doyle.png" alt="DOYLE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">DOYLE</div>
+                <div class="graph-description">Doyle graph - a symmetric cubic graph with 27 vertices and 40 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/durer.png" alt="DURER" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">DURER</div>
+                <div class="graph-description">Dürer graph - a polyhedral graph with 12 vertices and 18 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/ellingham_horton_54.png" alt="ELLINGHAM_HORTON_54" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">ELLINGHAM HORTON 54</div>
+                <div class="graph-description">Ellingham-Horton 54 graph - a bipartite cubic graph with 54 vertices and 81 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/ellingham_horton_78.png" alt="ELLINGHAM_HORTON_78" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">ELLINGHAM HORTON 78</div>
+                <div class="graph-description">Ellingham-Horton 78 graph - a bipartite cubic graph with 78 vertices and 117 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/errera.png" alt="ERRERA" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">ERRERA</div>
+                <div class="graph-description">Errera graph - a semi-symmetric cubic graph with 17 vertices and 27 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/folkman.png" alt="FOLKMAN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">FOLKMAN</div>
+                <div class="graph-description">Folkman graph - a semi-symmetric regular graph with 20 vertices and 40 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/franklin.png" alt="FRANKLIN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">FRANKLIN</div>
+                <div class="graph-description">Franklin graph - a 3-regular graph with 12 vertices and 18 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/frucht.png" alt="FRUCHT" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">FRUCHT</div>
+                <div class="graph-description">Frucht graph - a 3-regular graph with 12 vertices and 18 edges with no non-trivial symmetries. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/gem.png" alt="GEM" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GEM</div>
+                <div class="graph-description">Gem graph - diamond graph with an extra vertex attached. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/goldner_harary.png" alt="GOLDNER_HARARY" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GOLDNER HARARY</div>
+                <div class="graph-description">Goldner-Harary graph - a maximal planar graph with 11 vertices and 27 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/gosset.png" alt="GOSSET" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GOSSET</div>
+                <div class="graph-description">Gosset graph - a graph related to the E8 root system with 56 vertices and 756 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/grotzsch.png" alt="GROTZSCH" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GROTZSCH</div>
+                <div class="graph-description">Grötzsch graph - a triangle-free graph with 11 vertices and 20 edges and chromatic number 4. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/heawood.png" alt="HEAWOOD" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">HEAWOOD</div>
+                <div class="graph-description">Heawood graph - the unique (3,6)-cage graph with 14 vertices and 21 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/herschel.png" alt="HERSCHEL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">HERSCHEL</div>
+                <div class="graph-description">Herschel graph - the smallest non-Hamiltonian polyhedral graph (11 vertices, 18 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/hoffman.png" alt="HOFFMAN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">HOFFMAN</div>
+                <div class="graph-description">Hoffman graph - a 4-regular graph with 16 vertices and 32 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/house.png" alt="HOUSE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">HOUSE</div>
+                <div class="graph-description">House graph - pentagon with a triangle on top. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/kittell.png" alt="KITTELL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">KITTELL</div>
+                <div class="graph-description">Kittell graph - a graph with 23 vertices and 63 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/klein_3_regular.png" alt="KLEIN_3_REGULAR" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">KLEIN 3 REGULAR</div>
+                <div class="graph-description">Klein 3-regular graph - a cubic graph with 56 vertices and 84 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/klein_7_regular.png" alt="KLEIN_7_REGULAR" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">KLEIN 7 REGULAR</div>
+                <div class="graph-description">Klein 7-regular graph - a 7-regular graph with 24 vertices and 84 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/krackhardt_kite.png" alt="KRACKHARDT_KITE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">KRACKHARDT KITE</div>
+                <div class="graph-description">Krackhardt kite graph - a social network example with 10 vertices and 18 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/mobius_kantor.png" alt="MOBIUS_KANTOR" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">MOBIUS KANTOR</div>
+                <div class="graph-description">Möbius-Kantor graph - a symmetric bipartite cubic graph with 16 vertices and 24 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/moser_spindle.png" alt="MOSER_SPINDLE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">MOSER SPINDLE</div>
+                <div class="graph-description">Moser spindle graph - a unit distance graph with 7 vertices and 11 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/nauru.png" alt="NAURU" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">NAURU</div>
+                <div class="graph-description">Nauru graph - a symmetric bipartite cubic graph with 24 vertices and 36 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/pappus.png" alt="PAPPUS" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">PAPPUS</div>
+                <div class="graph-description">Pappus graph - a 3-regular graph with 18 vertices and 27 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/petersen.png" alt="PETERSEN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">PETERSEN</div>
+                <div class="graph-description">Petersen graph - a well-known symmetric cubic graph with 10 vertices and 15 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/poussin.png" alt="POUSSIN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">POUSSIN</div>
+                <div class="graph-description">Poussin graph - a graph with 15 vertices and 39 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/schlafli.png" alt="SCHLAFLI" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">SCHLAFLI</div>
+                <div class="graph-description">Schläfli graph - a strongly regular graph with 27 vertices and 216 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/thomsen.png" alt="THOMSEN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">THOMSEN</div>
+                <div class="graph-description">Thomsen graph (K3,3) - the utility graph, a complete bipartite graph (6 vertices, 9 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/tietze.png" alt="TIETZE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">TIETZE</div>
+                <div class="graph-description">Tietze graph - a cubic graph with 12 vertices and 18 edges. Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/tutte.png" alt="TUTTE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">TUTTE</div>
+                <div class="graph-description">Tutte graph - the smallest cubic graph without a Hamiltonian cycle (46 vertices, 69 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/zachary_karate_club.png" alt="ZACHARY_KARATE_CLUB" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">ZACHARY KARATE CLUB</div>
+                <div class="graph-description">Zachary's karate club graph - a social network of a university karate club (34 vertices, 78 edges). Parameters: []</div>
+                <div class="parameter-badge no-param-badge">No Parameters</div>
+            </div>
+        </div>
+            </div>
+        </div>
+        <div class="category-section" id="with-params">
+            <div class="category-header">
+                <h2> Graphs With Parameters <span class="category-count">34 graphs</span></h2>
+            </div>
+            <div class="graph-grid">
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/barabasi_albert_forest.png" alt="BARABASI_ALBERT_FOREST" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BARABASI ALBERT FOREST</div>
+                <div class="graph-description">Barabasi-Albert forest generator. Parameters: [numTrees: int, numVertices: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: BARABASI_ALBERT_FOREST, 3, 20, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/barabasi_albert_graph.png" alt="BARABASI_ALBERT_GRAPH" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BARABASI ALBERT GRAPH</div>
+                <div class="graph-description">Barabasi-Albert scale-free network model. Parameters: [initialVertices: int, edgesPerStep: int, finalVertices: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: BARABASI_ALBERT_GRAPH, 10, 2, 20
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/barbell.png" alt="BARBELL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BARBELL</div>
+                <div class="graph-description">Barbell graph - two complete graphs connected by a bridge. Parameters: [size1: int, size2: int]</div>
+                <div class="parameters">
+                    Example Args: BARBELL, 4, 3
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/broom.png" alt="BROOM" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">BROOM</div>
+                <div class="graph-description">Broom graph - path with multiple leaves at one end. Parameters: [pathLength: int, numLeaves: int]</div>
+                <div class="parameters">
+                    Example Args: BROOM, 5, 3
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/complete_bipartite.png" alt="COMPLETE_BIPARTITE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">COMPLETE BIPARTITE</div>
+                <div class="graph-description">Complete bipartite graph. Parameters: [set1Size: int, set2Size: int]</div>
+                <div class="parameters">
+                    Example Args: COMPLETE_BIPARTITE, 5, 15
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/complete.png" alt="COMPLETE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">COMPLETE</div>
+                <div class="graph-description">Complete graph (clique). Parameters: [numVertices: int]</div>
+                <div class="parameters">
+                    Example Args: COMPLETE, 20
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/crown.png" alt="CROWN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">CROWN</div>
+                <div class="graph-description">Crown graph - bipartite graph with a crown pattern. Parameters: [size: int]</div>
+                <div class="parameters">
+                    Example Args: CROWN, 5
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/directed_scale_free.png" alt="DIRECTED_SCALE_FREE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">DIRECTED SCALE FREE</div>
+                <div class="graph-description">Directed scale-free graph. Parameters: [alpha: float, gamma: float, deltaIn: float, deltaOut: float, targetEdges: int, targetNodes: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: DIRECTED_SCALE_FREE, 20, 30, 0.3, 0.3, 0.4, 0.1
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/empty.png" alt="EMPTY" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">EMPTY</div>
+                <div class="graph-description">Empty graph (edgeless graph). Parameters: [numVertices: int]</div>
+                <div class="parameters">
+                    Example Args: EMPTY, 20
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/fan.png" alt="FAN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">FAN</div>
+                <div class="graph-description">Fan graph - a single vertex joined to a path. Parameters: [pathLength: int]</div>
+                <div class="parameters">
+                    Example Args: FAN, 4
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/generalized_petersen.png" alt="GENERALIZED_PETERSEN" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GENERALIZED PETERSEN</div>
+                <div class="graph-description">Generalized Petersen graph. Parameters: [n: int, k: int]</div>
+                <div class="parameters">
+                    Example Args: GENERALIZED_PETERSEN, 10, 3
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/gnm_random_bipartite.png" alt="GNM_RANDOM_BIPARTITE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GNM RANDOM BIPARTITE</div>
+                <div class="graph-description">G(n,m) random bipartite graph. Parameters: [set1Size: int, set2Size: int, numEdges: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: GNM_RANDOM_BIPARTITE, 10, 10, 25, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/gnm_random_graph.png" alt="GNM_RANDOM_GRAPH" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GNM RANDOM GRAPH</div>
+                <div class="graph-description">G(n,m) random graph (Erdős–Rényi model). Parameters: [numVertices: int, numEdges: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: GNM_RANDOM_GRAPH, 50, 100, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/gnp_random_bipartite.png" alt="GNP_RANDOM_BIPARTITE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GNP RANDOM BIPARTITE</div>
+                <div class="graph-description">G(n,p) random bipartite graph. Parameters: [set1Size: int, set2Size: int, edgeProbability: double, seed: long]</div>
+                <div class="parameters">
+                    Example Args: GNP_RANDOM_BIPARTITE, 25, 35, 0.3, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/gnp_random_graph.png" alt="GNP_RANDOM_GRAPH" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GNP RANDOM GRAPH</div>
+                <div class="graph-description">G(n,p) random graph (Erdős–Rényi model). Parameters: [numVertices: int, edgeProbability: double, seed: long]</div>
+                <div class="parameters">
+                    Example Args: GNP_RANDOM_GRAPH, 40, 0.2, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/grid.png" alt="GRID" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">GRID</div>
+                <div class="graph-description">Grid graph. Parameters: [rows: int, columns: int]</div>
+                <div class="parameters">
+                    Example Args: GRID, 3, 4
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/hypercube.png" alt="HYPERCUBE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">HYPERCUBE</div>
+                <div class="graph-description">Hypercube graph. Parameters: [dimensions: int]</div>
+                <div class="parameters">
+                    Example Args: HYPERCUBE, 5
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/kleinberg_small_world.png" alt="KLEINBERG_SMALL_WORLD" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">KLEINBERG SMALL WORLD</div>
+                <div class="graph-description">Kleinberg small-world network. Parameters: [gridSize: int, localEdges: int, longRangeEdges: int, clusteringExponent: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: KLEINBERG_SMALL_WORLD, 10, 2, 3, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/ladder.png" alt="LADDER" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">LADDER</div>
+                <div class="graph-description">Ladder graph - two parallel paths connected by edges (rungs). Parameters: [length: int]</div>
+                <div class="parameters">
+                    Example Args: LADDER, 5
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/linear.png" alt="LINEAR" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">LINEAR</div>
+                <div class="graph-description">Linear graph (path graph). Parameters: [numVertices: int]</div>
+                <div class="parameters">
+                    Example Args: LINEAR, 20
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/linearized_chord_diagram.png" alt="LINEARIZED_CHORD_DIAGRAM" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">LINEARIZED CHORD DIAGRAM</div>
+                <div class="graph-description">Linearized chord diagram model. Parameters: [numVertices: int, numEdges: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: LINEARIZED_CHORD_DIAGRAM, 40, 60, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/planted_partition.png" alt="PLANTED_PARTITION" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">PLANTED PARTITION</div>
+                <div class="graph-description">Planted partition graph (stochastic block model). Parameters: [numBlocks: int, blockSize: int, intraProbability: double, interProbability: double, seed: long]</div>
+                <div class="parameters">
+                    Example Args: PLANTED_PARTITION, 3, 5, 0.8, 0.1, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/prism.png" alt="PRISM" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">PRISM</div>
+                <div class="graph-description">Prism graph - two n-cycles connected by matching edges. Parameters: [n: int]</div>
+                <div class="parameters">
+                    Example Args: PRISM, 4
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/prufer_tree.png" alt="PRUFER_TREE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">PRUFER TREE</div>
+                <div class="graph-description">Random tree generator using Prüfer sequences. Parameters: [numVertices: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: PRUFER_TREE, 15, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/random_regular.png" alt="RANDOM_REGULAR" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">RANDOM REGULAR</div>
+                <div class="graph-description">Random regular graph. Parameters: [numVertices: int, degree: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: RANDOM_REGULAR, 30, 4, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/ring.png" alt="RING" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">RING</div>
+                <div class="graph-description">Ring graph (cycle graph). Parameters: [numVertices: int]</div>
+                <div class="parameters">
+                    Example Args: RING, 25
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/scale_free.png" alt="SCALE_FREE" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">SCALE FREE</div>
+                <div class="graph-description">Scale-free graph (preferential attachment model). Parameters: [numVertices: int, seed: long]</div>
+                <div class="parameters">
+                    Example Args: SCALE_FREE, 10, 423
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/simple_weighted_bipartite_matrix.png" alt="SIMPLE_WEIGHTED_BIPARTITE_MATRIX" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">SIMPLE WEIGHTED BIPARTITE MATRIX</div>
+                <div class="graph-description">Simple weighted bipartite graph from matrix. Parameters: [weights: double[][]]</div>
+                <div class="parameters">
+                    Example Args: SIMPLE_WEIGHTED_BIPARTITE_MATRIX, 1,2,3, 4,5, 1.0,2.0;3.0,4.0;5.0,6.0
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/simple_weighted_graph_matrix.png" alt="SIMPLE_WEIGHTED_GRAPH_MATRIX" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">SIMPLE WEIGHTED GRAPH MATRIX</div>
+                <div class="graph-description">Simple weighted graph from matrix. Parameters: [weights: double[][]]</div>
+                <div class="parameters">
+                    Example Args: SIMPLE_WEIGHTED_GRAPH_MATRIX, 1,2,3, 0.0,1.0,2.0;1.0,0.0,3.0;2.0,3.0,0.0
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/star.png" alt="STAR" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">STAR</div>
+                <div class="graph-description">Star graph. Parameters: [numVertices: int]</div>
+                <div class="parameters">
+                    Example Args: STAR, 15
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/sunlet.png" alt="SUNLET" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">SUNLET</div>
+                <div class="graph-description">Sunlet graph - cycle with pendant vertices attached to each cycle vertex. Parameters: [cycleSize: int]</div>
+                <div class="parameters">
+                    Example Args: SUNLET, 5
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/watts_strogatz.png" alt="WATTS_STROGATZ" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">WATTS STROGATZ</div>
+                <div class="graph-description">Watts-Strogatz small-world network. Parameters: [numVertices: int, numNeighbors: int, rewiringProbability: double, seed: long]</div>
+                <div class="parameters">
+                    Example Args: WATTS_STROGATZ, 30, 4, 0.1, 42
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/wheel.png" alt="WHEEL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">WHEEL</div>
+                <div class="graph-description">Wheel graph. Parameters: [numVertices: int]</div>
+                <div class="parameters">
+                    Example Args: WHEEL, 20
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+        <div class="graph-card">
+            <div class="graph-image-container">
+                <img src="graph_images/windmill.png" alt="WINDMILL" class="graph-image">
+            </div>
+            <div class="graph-content">
+                <div class="graph-name">WINDMILL</div>
+                <div class="graph-description">Windmill graph (friendship graph). Parameters: [numBlades: int, bladeSize: int, mode: Mode]</div>
+                <div class="parameters">
+                    Example Args: WINDMILL, 5, 4, WINDMILL
+                </div>
+                <div class="parameter-badge">Parameterized</div>
+            </div>
+        </div>
+            </div>
+        </div>
+        <div class="docs-section">
+            <div class="docs-header">
+                <h2>Creating Graphs with ALGatorGraph Library</h2>
+            </div>
+            <div class="docs-content">
+                <p>The ALGatorGraph library provides two main graph classes: <strong>Graph</strong> (undirected) and <strong>DGraph</strong> (directed). Both support generic vertex and edge types with generic weights.</p>
+                <div class="example-title">Example 1: Creating a Simple Undirected Graph</div>
+                <div class="code-block">
+                    <pre>
+// Create an undirected graph with String vertices and Integer weights
+Graph&lt;String, Integer&gt; cityGraph = new Graph&lt;&gt;();
+
+// Add vertices (cities)
+cityGraph.addVertex("New York");
+cityGraph.addVertex("Boston");
+cityGraph.addVertex("Washington DC");
+
+// Create edges with weights
+Edge&lt;String, Integer&gt; edge1 = new Edge&lt;&gt;("New York", "Boston", 215);
+Edge&lt;String, Integer&gt; edge2 = new Edge&lt;&gt;("New York", "Washington DC", 225);
+Edge&lt;String, Integer&gt; edge3 = new Edge&lt;&gt;("Boston", "Washington DC", 440);
+
+// Add edges to the graph
+cityGraph.addEdge("New York", "Boston", edge1);
+cityGraph.addEdge("New York", "Washington DC", edge2);
+cityGraph.addEdge("Boston", "Washington DC", edge3);
+
+// Get all vertices and edges
+Set&lt;String&gt; cities = cityGraph.vertexSet();
+Set&lt;Edge&lt;String, Integer&gt;&gt; routes = cityGraph.edgeSet();
+System.out.println(cityGraph);
+                    </pre>
+                </div>
+                <div class="example-title">Example 2: Creating a Directed Graph</div>
+                <div class="code-block">
+                    <pre>
+// Create a directed graph
+DGraph&lt;String, Double&gt; webGraph = new DGraph&lt;&gt;();
+
+// Add web pages as vertices
+webGraph.addVertex("Page A");
+webGraph.addVertex("Page B");
+webGraph.addVertex("Page C");
+
+// Add directed edges (hyperlinks) with weights (importance scores)
+DEdge&lt;String, Double&gt; link1 = new DEdge&lt;&gt;("Page A", "Page B", 0.85);
+DEdge&lt;String, Double&gt; link2 = new DEdge&lt;&gt;("Page A", "Page C", 0.45);
+DEdge&lt;String, Double&gt; link3 = new DEdge&lt;&gt;("Page B", "Page C", 0.92);
+
+webGraph.addEdge("Page A", "Page B", link1);
+webGraph.addEdge("Page A", "Page C", link2);
+webGraph.addEdge("Page B", "Page C", link3);
+
+// Check outgoing links from Page A
+Set&lt;DEdge&lt;String, Double&gt;&gt; outLinks = webGraph.outgoingEdgesOf("Page A");
+System.out.println("Outgoing links from Page A: " + outLinks);
+                    </pre>
+                </div>
+                <div class="example-title">Example 3: Building a Graph "From Scratch" (Simple Unweighted)</div>
+                <div class="code-block">
+                    <pre>
+// Create an unweighted graph
+Graph&lt;Integer, Object&gt; myGraph = new Graph&lt;&gt;();
+
+// Add vertices 0 through 4
+for (int i = 0; i &lt; 5; i++) {
+    myGraph.addVertex(i);
+}
+
+// Add unweighted edges using the simple addEdge method
+// (creates edges with null weights automatically)
+myGraph.addEdge(0, 1);
+myGraph.addEdge(0, 2);
+myGraph.addEdge(1, 2);
+myGraph.addEdge(1, 3);
+myGraph.addEdge(2, 4);
+myGraph.addEdge(3, 4);
+
+// Display graph information
+System.out.println("Number of vertices: " + myGraph.vertexSet().size());
+System.out.println("Number of edges: " + myGraph.edgeSet().size());
+                    </pre>
+                </div>
+            </div>
+        </div>
+        <div class="docs-section">
+            <div class="docs-header">
+                <h2>Generating Graphs with GraphCreator</h2>
+            </div>
+            <div class="docs-content">
+                <p>The <strong>GraphCreator</strong> class provides a unified interface for generating various types of graphs using the <code>generateGraph()</code> method. Graph types are specified using the <code>GraphTypes</code> enum.</p>
+                <div class="example-title">Example 1: Generating a Graph Without Parameters</div>
+                <div class="code-block">
+                    <pre>
+// Generate the Petersen graph (no parameters needed)
+String[] args = {"PETERSEN"};
+Graph&lt;Integer, DefaultWeightedEdge&gt; petersenGraph = GraphCreator.generateGraph(args);
+
+System.out.println("Petersen Graph:");
+System.out.println("  Vertices: " + petersenGraph.vertexSet().size());  // Output: 10
+System.out.println("  Edges: " + petersenGraph.edgeSet().size());     // Output: 15
+                    </pre>
+                </div>
+                <div class="example-title">Example 2: Generating a Complete Graph (K5)</div>
+                <div class="code-block">
+                    <pre>
+// Generate a complete graph with 5 vertices
+String[] args = {"COMPLETE", "5"};
+Graph&lt;Integer, DefaultWeightedEdge&gt; completeGraph = GraphCreator.generateGraph(args);
+
+System.out.println("Complete Graph K5:");
+System.out.println("  Vertices: " + completeGraph.vertexSet().size());  // Output: 5
+System.out.println("  Edges: " + completeGraph.edgeSet().size());     // Output: 10
+                    </pre>
+                </div>
+                <div class="example-title">Example 3: Generating a Random Graph (GNP)</div>
+                <div class="code-block">
+                    <pre>
+// Generate a random graph with 20 vertices and edge probability 0.3
+String[] args = {"GNP_RANDOM_GRAPH", "20", "0.3", "12345"};
+Graph&lt;Integer, DefaultWeightedEdge&gt; randomGraph = GraphCreator.generateGraph(args);
+
+System.out.println("Random Graph (GNP):");
+System.out.println("  Vertices: " + randomGraph.vertexSet().size());
+System.out.println("  Edges: " + randomGraph.edgeSet().size());
+                    </pre>
+                </div>
+                <div class="example-title">Example 4: Generating a Grid Graph</div>
+                <div class="code-block">
+                    <pre>
+// Generate a 4x5 grid graph
+String[] args = {"GRID", "4", "5"};
+Graph&lt;Integer, DefaultWeightedEdge&gt; gridGraph = GraphCreator.generateGraph(args);
+
+System.out.println("Grid Graph (4x5):");
+System.out.println("  Vertices: " + gridGraph.vertexSet().size());  // Output: 20
+System.out.println("  Edges: " + gridGraph.edgeSet().size());     // Output: 31
+                    </pre>
+                </div>
+                <div class="example-title">Example 5: Generating a Scale-Free Network</div>
+                <div class="code-block">
+                    <pre>
+// Generate a scale-free network with 100 vertices
+String[] args = {"SCALE_FREE", "100", "42"};
+Graph&lt;Integer, DefaultWeightedEdge&gt; scaleFreeGraph = GraphCreator.generateGraph(args);
+
+System.out.println("Scale-Free Network:");
+System.out.println("  Vertices: " + scaleFreeGraph.vertexSet().size());
+System.out.println("  Edges: " + scaleFreeGraph.edgeSet().size());
+                    </pre>
+                </div>
+                <div class="note">
+                    <strong>Note:</strong> The <code>GraphTypes</code> enum includes over 80 different graph types, ranging from classic named graphs (Petersen, Chvátal, Karate Club) to parameterized generators (Complete, Grid, Watts-Strogatz, etc.). Check the gallery above for the complete list!
+                </div>
+            </div>
+        </div>
+        <div class="docs-section">
+            <div class="docs-header">
+                <h2>Importing Graphs from Files</h2>
+            </div>
+            <div class="docs-content">
+                <p>The <code>GraphCreator</code> class automatically detects formats based on file extensions. Supported formats and their sources include:</p>
+                
+                <ul class="format-list" style="line-height: 1.6; margin-left: 40px;">
+                    <li><strong>GraphML</strong> (<code>.graphml</code>): <a href="https://visdunneright.github.io/gd_benchmark_sets/">GD Benchmark Sets</a></li>
+                    <li><strong>Pajek</strong> (<code>.net, .paj, .mat</code>): <a href="http://vlado.fmf.uni-lj.si/pub/networks/data/">Pajek Datasets</a></li>
+                    <li><strong>Network Repo</strong> (<code>.edges, .mtx</code>): <a href="https://networkrepository.com">Network Repository</a></li>
+                    <li><strong>Stanford SNAP</strong> (<code>.txt, .csv</code>): <a href="https://snap.stanford.edu/data/">SNAP Repository</a></li>
+                    <li><strong>TU Dataset</strong> (Folder): <a href="https://chrsmrrs.github.io/datasets/docs/datasets/">TU Dortmund</a></li>
+                    <li><strong>DIMACS10</strong> (<code>.graph</code>): <a href="https://sparse.tamu.edu/DIMACS10">DIMACS Archive</a></li>
+                    <li><strong>LST</strong> (<code>.lst</code>): <a href="https://houseofgraphs.org">House of Graphs</a></li>
+                    <li><strong>MalNet</strong> (<code>.edgelist</code>): <a href="https://www.mal-net.org/">MalNet Project</a></li>
+                </ul>
+                <div class="example-title">Example 1: Importing a Single Graph from a File</div>
+                <div class="code-block">
+                    <pre>
+// Import a single graph from a file (format is auto-detected)
+File graphFile = new File("path/to/mygraph.graphml");
+Graph importedGraph = GraphCreator.importGraphFromFile(graphFile);
+
+if (importedGraph != null) {
+    System.out.println("Successfully imported graph:");
+    System.out.println("  Vertices: " + importedGraph.vertexSet().size());
+    System.out.println("  Edges: " + importedGraph.edgeSet().size());
+} else {
+    System.out.println("Failed to import graph");
+}
+                    </pre>
+                </div>
+                <div class="example-title">Example 2: Importing All Graphs from a Folder</div>
+                <div class="code-block">
+                    <pre>
+// Import all graphs from a folder (creates import_log.txt)
+String folderPath = "path/to/graphs/folder";
+List&lt;Graph&gt; graphCollection = GraphCreator.importGraphsFromFolder(folderPath);
+
+System.out.println("Imported " + graphCollection.size() + " graphs successfully");
+
+// Display information about each imported graph
+for (int i = 0; i &lt; graphCollection.size(); i++) {
+    Graph g = graphCollection.get(i);
+    System.out.println("Graph " + i + ": " + g.vertexSet().size() + " vertices, " + g.edgeSet().size() + " edges");
+}
+                    </pre>
+                </div>
+                <div class="example-title">Example 3: Working with Graph Collections</div>
+                <div class="code-block">
+                    <pre>
+// Get all graph names in a collection
+String folderPath = "path/to/graphs";
+String collectionName = "my_collection";
+String[] graphNames = GraphCreator.getGraphNames(folderPath, collectionName);
+
+System.out.println("Graphs in collection: " + Arrays.toString(graphNames));
+
+// Get a random graph from the collection
+Graph randomGraph = GraphCreator.getRandomGraph(folderPath, collectionName);
+
+// Get description of a specific graph
+GraphCreator.GraphDescription desc = GraphCreator.getGraphDescription(folderPath, collectionName, graphNames[0]);
+System.out.println(desc);
+                    </pre>
+                </div>
+                <div class="example-title">Example 4: Handling Import Errors</div>
+                <div class="code-block">
+                    <pre>
+// The import process handles errors gracefully
+// - OutOfMemoryError: System attempts to empty memory and continue importing the rest of the graphs
+// - Parse errors: Skips problematic files and logs them in a log file inside the graph folder
+// - Log file: import_log.txt is created with success/failure status for each graph
+
+List&lt;Graph&gt; graphs = GraphCreator.importGraphsFromFolder("path/to/folder");
+
+// Check the log file for details on any failures
+File logFile = new File("path/to/folder/import_log.txt");
+// Format: filename success(1/0)
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Add click handler to graph cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.graph-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const name = this.querySelector('.graph-name').textContent;
+                    console.log('Selected graph:', name);
+                });
+            });
+            
+            // Add smooth scrolling for category headers
+            const categoryHeaders = document.querySelectorAll('.category-header');
+            categoryHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    this.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

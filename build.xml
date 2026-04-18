@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="AlGatorGraph">
+    <property name="target" value="11"/>
+    <property name="source" value="11"/>
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="bin.dir" value="bin"/>
+
+    <path id="AlGatorGraph.classpath">
+        <pathelement location="${bin.dir}"/>
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${bin.dir}"/>
+        <copy includeemptydirs="false" todir="${bin.dir}">
+            <fileset dir="${src.dir}">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="${bin.dir}"/>
+        <delete file="AlGatorGraph.jar"/>
+    </target>
+
+    <target depends="clean" name="cleanall"/>
+
+    <target depends="init" name="build">
+        <echo message="Building AlGatorGraph..."/>
+        <javac debug="true" destdir="${bin.dir}" includeantruntime="false" 
+               source="${source}" target="${target}" encoding="Cp1250">
+            <src path="${src.dir}"/>
+            <classpath refid="AlGatorGraph.classpath"/>
+        </javac>
+    </target>
+
+    <target name="run">
+        <java classname="algatorgraph.GraphCreator" failonerror="true" fork="yes">
+            <classpath refid="AlGatorGraph.classpath"/>
+        </java>
+    </target>
+
+    <target depends="build" name="jar" description="Creates a standalone Fat JAR">
+        <jar destfile="AlGatorGraph.jar" basedir="${bin.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="algatorgraph.GraphCreator"/>
+            </manifest>
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
+        </jar>
+        <echo message="Standalone JAR created: AlGatorGraph.jar"/>
+    </target>
+    
+	<target name="javadoc" description="Generates fresh Javadoc documentation">
+	    <delete dir="doc"/>
+	    <mkdir dir="doc"/>
+	    
+	    <javadoc sourcepath="${src.dir}" 
+	             destdir="doc" 
+	             author="true" 
+	             version="true" 
+	             use="true"
+	             encoding="UTF-8"
+	             docencoding="UTF-8"
+	             charset="UTF-8"
+	             windowtitle="AlGatorGraph API">
+	        
+	        <classpath refid="AlGatorGraph.classpath"/>
+	        
+	        <packageset dir="${src.dir}">
+	            <include name="**"/>
+	        </packageset>
+	    </javadoc>
+	    
+	    <echo message="Javadoc has been updated in the doc/ folder."/>
+	</target>
+</project>

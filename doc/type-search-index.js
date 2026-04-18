@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"algatorgraph","l":"DEdge"},{"p":"algatorgraph","l":"DGraph"},{"p":"algatorgraph","l":"Edge"},{"p":"algatorgraph","l":"Graph"},{"p":"algatorgraph","l":"GraphConverter"},{"p":"algatorgraph","l":"GraphCreator"},{"p":"algatorgraph","l":"GraphCreator.GraphWebsiteGenerator"}]
