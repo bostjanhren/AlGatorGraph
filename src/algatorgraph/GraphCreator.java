@@ -2772,7 +2772,7 @@ public class GraphCreator {
 	        html.append("                <h2>Creating Graphs with ALGatorGraph Library</h2>\n");
 	        html.append("            </div>\n");
 	        html.append("            <div class=\"docs-content\">\n");
-	        html.append("                <p>The ALGatorGraph library provides two main graph classes: <strong>Graph</strong> (undirected) and <strong>DGraph</strong> (directed). Both support generic vertex and edge types with generic weights.</p>\n");
+	        html.append("                <p>The ALGatorGraph library provides two main graph classes: <strong>Graph</strong> (undirected) and <strong>ADGraph</strong> (directed). Both support generic vertex and edge types with generic weights.</p>\n");
 	        
 	        // Example 1: Basic undirected graph
 	        html.append("                <div class=\"example-title\">Example 1: Creating a Simple Undirected Graph</div>\n");
@@ -2808,7 +2808,7 @@ public class GraphCreator {
 	        html.append("                <div class=\"code-block\">\n");
 	        html.append("                    <pre>\n");
 	        html.append("// Create a directed graph\n");
-	        html.append("DGraph&lt;String, Double&gt; webGraph = new DGraph&lt;&gt;();\n");
+	        html.append("ADGraph&lt;String, Double&gt; webGraph = new ADGraph&lt;&gt;();\n");
 	        html.append("\n");
 	        html.append("// Add web pages as vertices\n");
 	        html.append("webGraph.addVertex(\"Page A\");\n");

@@ -13,15 +13,15 @@ import org.jgrapht.graph.DefaultWeightedEdge;
  * <ul>
  *   <li>Edge weights are numeric types (Double, Integer, Float, etc.) This is because we assume the use of {@link org.jgrapht.graph.DefaultEdge} and {@link org.jgrapht.graph.DefaultWeightedEdge} </li>
  *   <li>Vertex types are preserved during conversion</li>
- *   <li>Graph directionality is preserved (directed JGraphT graphs {@literal ->} DGraph, undirected {@literal ->} Graph)</li>
+ *   <li>Graph directionality is preserved (directed JGraphT graphs {@literal ->} ADGraph, undirected {@literal ->} AGraph)</li>
  * </ul>
  */
 public class GraphConverter {
     
     /**
-     * Converts a JGraphT graph (directed or undirected) to a DGraph with generic weight type.
+     * Converts a JGraphT graph (directed or undirected) to a ADGraph with generic weight type.
      * <p>
-     * <b>Important:</b> This method always creates a {@link DGraph} regardless of whether
+     * <b>Important:</b> This method always creates a {@link ADGraph} regardless of whether
      * the input graph is directed or undirected in JGraphT. For undirected graphs,
      * consider using {@link #JGraphTToU(org.jgrapht.Graph, java.lang.Class)} instead.
      * 
@@ -32,14 +32,14 @@ public class GraphConverter {
      * jGraph.addVertex(2);
      * DefaultWeightedEdge e = jGraph.addEdge(1, 2);
      * jGraph.setEdgeWeight(e, 3.5);
-     * DGraph&lt;Integer, Double&gt; dGraph = GraphConverter.JGraphTToD(jGraph, Double.class);
+     * ADGraph&lt;Integer, Double&gt; dGraph = GraphConverter.JGraphTToD(jGraph, Double.class);
      * System.out.println(dGraph);
      * </pre>
      * 
      * <pre>
      * Usage example 2: Convert imported graph with Integer weights
      * List&lt;Graph&gt; graphs = GraphCreator.importGraphsFromFolder("path_to_folder");
-     * DGraph&lt;String, Integer&gt; dGraph = GraphConverter.JGraphTToD(graphs.get(0), Integer.class);
+     * ADGraph&lt;String, Integer&gt; dGraph = GraphConverter.JGraphTToD(graphs.get(0), Integer.class);
      * System.out.println(dGraph);
      * </pre>
      * 
@@ -47,7 +47,7 @@ public class GraphConverter {
      * Usage example 3: Convert generated graph with Float weights
      * String[] args = {"DIRECTED_SCALE_FREE", "0.3", "0.5", "0.1", "0.1", "50", "20"};
      * Graph&lt;Integer, DefaultEdge&gt; jGraph = GraphCreator.generateGraph(args);
-     * DGraph&lt;Integer, Float&gt; dGraph = GraphConverter.JGraphTToD(jGraph, Float.class);
+     * ADGraph&lt;Integer, Float&gt; dGraph = GraphConverter.JGraphTToD(jGraph, Float.class);
      * System.out.println(dGraph);
      * </pre>
      * 
@@ -55,7 +55,7 @@ public class GraphConverter {
      * @param <W> the type of edge weights in the output graph (must extend Number)
      * @param jgraphtGraph the JGraphT graph to convert (can be directed or undirected)
      * @param weightClass the class object representing the weight type (e.g., Double.class, Integer.class)
-     * @return a {@link DGraph} containing all vertices and edges from the input graph.
+     * @return a {@link ADGraph} containing all vertices and edges from the input graph.
      *         Edge weights will be:
      *         <ul>
      *           <li>{@code null} for unweighted edges ({@link DefaultEdge})</li>
@@ -65,7 +65,7 @@ public class GraphConverter {
      * @throws NullPointerException if jgraphtGraph or weightClass is null
      * @throws IllegalArgumentException if weightClass is not a supported numeric type
      */
-    public static <V, W extends Number> DGraph<V, W> JGraphTToD(org.jgrapht.Graph jgraphtGraph, Class<W> weightClass) {
+    public static <V, W extends Number> ADGraph<V, W> JGraphTToD(org.jgrapht.Graph jgraphtGraph, Class<W> weightClass) {
         if (jgraphtGraph == null) {
             throw new NullPointerException("JGraphT graph cannot be null");
         }
@@ -73,7 +73,7 @@ public class GraphConverter {
             throw new NullPointerException("Weight class cannot be null");
         }
         
-        DGraph<V, W> dGraph = new DGraph<>();
+        ADGraph<V, W> dGraph = new ADGraph<>();
 
         for (Object vObj : jgraphtGraph.vertexSet()) {
             dGraph.addVertex((V) vObj);
@@ -105,19 +105,19 @@ public class GraphConverter {
     }
 
     /**
-     * Converts a JGraphT graph to a DGraph with Double weights (convenience method).
+     * Converts a JGraphT graph to a ADGraph with Double weights (convenience method).
      * 
      * @param <V> the type of vertices
      * @param jgraphtGraph the JGraphT graph to convert
-     * @return a DGraph with Double weights
+     * @return a ADGraph with Double weights
      * @see #JGraphTToD(org.jgrapht.Graph, java.lang.Class)
      */
-    public static <V> DGraph<V, Double> JGraphTToD(org.jgrapht.Graph jgraphtGraph) {
+    public static <V> ADGraph<V, Double> JGraphTToD(org.jgrapht.Graph jgraphtGraph) {
         return JGraphTToD(jgraphtGraph, Double.class);
     }
    
     /**
-     * Converts a JGraphT undirected graph to an undirected Graph with generic weight type.
+     * Converts a JGraphT undirected graph to an undirected AGraph with generic weight type.
      * <p>
      * <b>Important:</b> This method is designed for undirected JGraphT graphs.
      * For directed graphs, use {@link #JGraphTToD(org.jgrapht.Graph, java.lang.Class)}.
@@ -129,7 +129,7 @@ public class GraphConverter {
      * jGraph.addVertex(2);
      * DefaultWeightedEdge e = jGraph.addEdge(1, 2);
      * jGraph.setEdgeWeight(e, 2.5);
-     * Graph&lt;Integer, Double&gt; uGraph = GraphConverter.JGraphTToU(jGraph, Double.class);
+     * AGraph&lt;Integer, Double&gt; uGraph = GraphConverter.JGraphTToU(jGraph, Double.class);
      * System.out.println(uGraph);
      * </pre>
      *
@@ -137,14 +137,14 @@ public class GraphConverter {
      * Usage example 2: Convert generated complete graph with Integer weights
      * String[] args = {"COMPLETE", "5"};
      * Graph&lt;Integer, DefaultEdge&gt; jGraph = GraphCreator.generateGraph(args);
-     * Graph&lt;Integer, Integer&gt; uGraph = GraphConverter.JGraphTToU(jGraph, Integer.class);
+     * AGraph&lt;Integer, Integer&gt; uGraph = GraphConverter.JGraphTToU(jGraph, Integer.class);
      * System.out.println(uGraph);
      * </pre>
      *
      * <pre>
      * Usage example 3: Convert imported graph with custom weight type
      * List&lt;Graph&gt; graphs = GraphCreator.importGraphsFromFolder("path_to_folder");
-     * Graph&lt;String, Float&gt; uGraph = GraphConverter.JGraphTToU(graphs.get(0), Float.class);
+     * AGraph&lt;String, Float&gt; uGraph = GraphConverter.JGraphTToU(graphs.get(0), Float.class);
      * System.out.println(uGraph);
      * </pre>
      *
@@ -152,7 +152,7 @@ public class GraphConverter {
      * @param <W> the type of edge weights in the output graph (must extend Number)
      * @param jgraphtGraph the JGraphT undirected graph to convert
      * @param weightClass the class object representing the weight type (e.g., Double.class, Integer.class)
-     * @return a {@link Graph} (undirected) containing all vertices and edges from the input.
+     * @return a {@link AGraph} (undirected) containing all vertices and edges from the input.
      *         Edge weights will be:
      *         <ul>
      *           <li>{@code null} for unweighted edges ({@link DefaultEdge})</li>
@@ -162,7 +162,7 @@ public class GraphConverter {
      * @throws NullPointerException if jgraphtGraph or weightClass is null
      * @throws IllegalArgumentException if weightClass is not a supported numeric type
      */
-    public static <V, W extends Number> Graph<V, W> JGraphTToU(org.jgrapht.Graph jgraphtGraph, Class<W> weightClass) {
+    public static <V, W extends Number> AGraph<V, W> JGraphTToU(org.jgrapht.Graph jgraphtGraph, Class<W> weightClass) {
         if (jgraphtGraph == null) {
             throw new NullPointerException("JGraphT graph cannot be null");
         }
@@ -170,7 +170,7 @@ public class GraphConverter {
             throw new NullPointerException("Weight class cannot be null");
         }
         
-        Graph<V, W> myGraph = new Graph<>();
+        AGraph<V, W> myGraph = new AGraph<>();
 
         for (Object vObj : jgraphtGraph.vertexSet()) {
             myGraph.addVertex((V) vObj);
@@ -203,14 +203,14 @@ public class GraphConverter {
     }
 
     /**
-     * Converts a JGraphT undirected graph to a Graph with Double weights (convenience method).
+     * Converts a JGraphT undirected graph to a AGraph with Double weights (convenience method).
      * 
      * @param <V> the type of vertices
      * @param jgraphtGraph the JGraphT graph to convert
-     * @return a Graph with Double weights
+     * @return a AGraph with Double weights
      * @see #JGraphTToU(org.jgrapht.Graph, java.lang.Class)
      */
-    public static <V> Graph<V, Double> JGraphTToU(org.jgrapht.Graph jgraphtGraph) {
+    public static <V> AGraph<V, Double> JGraphTToU(org.jgrapht.Graph jgraphtGraph) {
         return JGraphTToU(jgraphtGraph, Double.class);
     }
 
@@ -251,10 +251,10 @@ public class GraphConverter {
      * Usage example:
      * org.jgrapht.Graph jGraph = // ... get a graph
      * if (GraphConverter.isDirected(jGraph)) {
-     *     DGraph&lt;Integer, Double&gt; dGraph = GraphConverter.JGraphTToD(jGraph, Double.class);
+     *     ADGraph&lt;Integer, Double&gt; dGraph = GraphConverter.JGraphTToD(jGraph, Double.class);
      *     // Process as directed graph
      * } else {
-     *     Graph&lt;Integer, Double&gt; uGraph = GraphConverter.JGraphTToU(jGraph, Double.class);
+     *     AGraph&lt;Integer, Double&gt; uGraph = GraphConverter.JGraphTToU(jGraph, Double.class);
      *     // Process as undirected graph
      * }
      * </pre>
@@ -279,11 +279,11 @@ public class GraphConverter {
      * org.jgrapht.Graph jGraph = // ... get a graph
      * Object convertedGraph = GraphConverter.convert(jGraph, Double.class);
      * 
-     * if (convertedGraph instanceof DGraph) {
-     *     DGraph&lt;Integer, Double&gt; dGraph = (DGraph&lt;Integer, Double&gt;) convertedGraph;
+     * if (convertedGraph instanceof ADGraph) {
+     *     ADGraph&lt;Integer, Double&gt; dGraph = (ADGraph&lt;Integer, Double&gt;) convertedGraph;
      *     // Process as directed graph
      * } else {
-     *     Graph&lt;Integer, Double&gt; uGraph = (Graph&lt;Integer, Double&gt;) convertedGraph;
+     *     AGraph&lt;Integer, Double&gt; uGraph = (AGraph&lt;Integer, Double&gt;) convertedGraph;
      *     // Process as undirected graph
      * }
      * </pre>
@@ -292,7 +292,7 @@ public class GraphConverter {
      * @param <W> the type of edge weights
      * @param jgraphtGraph the JGraphT graph to convert
      * @param weightClass the class object representing the weight type
-     * @return either a {@link DGraph} or {@link Graph} based on the input graph's directionality
+     * @return either a {@link ADGraph} or {@link AGraph} based on the input graph's directionality
      * @throws NullPointerException if jgraphtGraph or weightClass is null
      */
     @SuppressWarnings("unchecked")
@@ -313,18 +313,18 @@ public class GraphConverter {
      * org.jgrapht.Graph jGraph = // ... get a graph
      * Object convertedGraph = GraphConverter.convert(jGraph);
      * 
-     * if (convertedGraph instanceof DGraph) {
-     *     DGraph&lt;Integer, Double&gt; dGraph = (DGraph&lt;Integer, Double&gt;) convertedGraph;
+     * if (convertedGraph instanceof ADGraph) {
+     *     ADGraph&lt;Integer, Double&gt; dGraph = (ADGraph&lt;Integer, Double&gt;) convertedGraph;
      *     // Process as directed graph
      * } else {
-     *     Graph&lt;Integer, Double&gt; uGraph = (Graph&lt;Integer, Double&gt;) convertedGraph;
+     *     AGraph&lt;Integer, Double&gt; uGraph = (AGraph&lt;Integer, Double&gt;) convertedGraph;
      *     // Process as undirected graph
      * }
      * </pre>
      * 
      * @param <V> the type of vertices
      * @param jgraphtGraph the JGraphT graph to convert
-     * @return either a {@link DGraph} or {@link Graph} based on the input graph's directionality
+     * @return either a {@link ADGraph} or {@link AGraph} based on the input graph's directionality
      * @throws NullPointerException if jgraphtGraph is null
      * @see #convert(org.jgrapht.Graph, java.lang.Class)
      */
